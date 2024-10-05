@@ -1,0 +1,33 @@
+{{- if .Values.mongo.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "webprotege.fullname" . }}-mongo-pvc
+  labels:
+    {{- include "webprotege.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.mongo.persistence.size }}
+{{- end }}
+
+---
+
+{{- if .Values.rabbitmq.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "webprotege.fullname" . }}-rabbitmq-pvc
+  labels:
+    {{- include "webprotege.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.rabbitmq.persistence.size }}
+{{- end }}
+
+# Add similar PersistentVolumeClaim resources for other services that require persistence (keycloak, minio, webprotege backend)

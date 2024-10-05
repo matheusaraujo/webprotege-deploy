@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "webprotege.fullname" . }}-mongo
+  labels:
+    {{- include "webprotege.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "webprotege.selectorLabels" . | nindent 6 }}
+      app: mongo
+  template:
+    metadata:
+      labels:
+        {{- include "webprotege.selectorLabels" . | nindent 8 }}
+        app: mongo
+    spec:
+      containers:
+        - name: mongo
+          image: "{{ .Values.mongo.image.repository }}:{{ .Values.mongo.image.tag }}"
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-data
+              mountPath: /data/db
+      volumes:
+        - name: mongo-data
+          {{- if .Values.mongo.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "webprotege.fullname" . }}-mongo-pvc
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "webprotege.fullname" . }}-rabbitmq
+  labels:
+    {{- include "webprotege.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "webprotege.selectorLabels" . | nindent 6 }}
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        {{- include "webprotege.selectorLabels" . | nindent 8 }}
+        app: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: "{{ .Values.rabbitmq.image.repository }}:{{ .Values.rabbitmq.image.tag }}"
+          ports:
+            - containerPort: 5672
+            - containerPort: 15672
+          volumeMounts:
+            - name: rabbitmq-data
+              mountPath: /var/lib/rabbitmq
+      volumes:
+        - name: rabbitmq-data
+          {{- if .Values.rabbitmq.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "webprotege.fullname" . }}-rabbitmq-pvc
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+
+# Add similar Deployment resources for other services (keycloak, zipkin, minio, webprotege components, nginx)

@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webprotege.fullname" . }}-mongo
+  labels:
+    {{- include "webprotege.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "webprotege.selectorLabels" . | nindent 4 }}
+    app: mongo
+  ports:
+    - port: 27017
+      targetPort: 27017
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webprotege.fullname" . }}-rabbitmq
+  labels:
+    {{- include "webprotege.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "webprotege.selectorLabels" . | nindent 4 }}
+    app: rabbitmq
+  ports:
+    - port: 5672
+      targetPort: 5672
+      name: amqp  # Added name for AMQP protocol
+    - port: 15672
+      targetPort: 15672
+      name: http  # Added name for management UI
+
+# Add similar Service resources for other deployments (keycloak, zipkin, minio, webprotege components, nginx)

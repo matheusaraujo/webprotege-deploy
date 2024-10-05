@@ -1,0 +1,92 @@
+global:
+  domain: webprotege-local.edu
+
+mongo:
+  image:
+    repository: mongo
+    tag: latest
+  persistence:
+    enabled: true
+    size: 1Gi
+
+rabbitmq:
+  image:
+    repository: rabbitmq
+    tag: management
+  persistence:
+    enabled: true
+    size: 1Gi
+
+keycloak:
+  image:
+    repository: protegeproject/keycloak
+    tag: latest
+  persistence:
+    enabled: true
+    size: 1Gi
+  env:
+    KEYCLOAK_USER: admin
+    KEYCLOAK_PASSWORD: password
+    PROXY_ADDRESS_FORWARDING: "true"
+    KEYCLOAK_LOGLEVEL: DEBUG
+    KEYCLOAK_FRONTEND_URL: "http://webprotege-local.edu/auth"
+    KEYCLOAK_IMPORT: /tmp/webprotege.json
+    KEYCLOAK_HOSTNAME_ADMIN_URL: "http://webprotege-local.edu/auth"
+
+zipkin:
+  image:
+    repository: openzipkin/zipkin
+    tag: latest
+
+minio:
+  image:
+    repository: minio/minio
+    tag: latest
+  persistence:
+    enabled: true
+    size: 1Gi
+  env:
+    MINIO_ROOT_USER: webprotege
+    MINIO_ROOT_PASSWORD: webprotege
+
+webprotege:
+  gwtApiGateway:
+    image:
+      repository: protegeproject/webprotege-gwt-api-gateway
+      tag: 1.0.10
+  gwtUiServer:
+    image:
+      repository: protegeproject/webprotege-gwt-ui-server
+      tag: 5.0.13
+  authorizationService:
+    image:
+      repository: protegeproject/webprotege-authorization-service
+      tag: 1.0.2
+  userManagementService:
+    image:
+      repository: protegeproject/webprotege-user-management-service
+      tag: 1.0.1
+  eventHistoryService:
+    image:
+      repository: protegeproject/webprotege-event-history-service
+      tag: 1.0.2
+  ontologyProcessingService:
+    image:
+      repository: protegeproject/webprotege-ontology-processing-service
+      tag: 1.0.0
+  initialRevisionHistoryService:
+    image:
+      repository: protegeproject/webprotege-initial-revision-history-service
+      tag: 1.0.0
+  backendService:
+    image:
+      repository: protegeproject/webprotege-backend-service
+      tag: 1.3.3
+    persistence:
+      enabled: true
+      size: 1Gi
+
+nginx:
+  image:
+    repository: protegeproject/webprotege-nginx
+    tag: 1.2.0
